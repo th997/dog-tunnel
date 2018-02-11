@@ -108,7 +108,11 @@ func Read(conn net.Conn, callback ReadCallBack) {
 		binary.Read(buf, binary.LittleEndian, &id)
 		binary.Read(buf, binary.LittleEndian, &action)
 		binary.Read(buf, binary.LittleEndian, &content)
-		callback(conn, string(id), Xor(string(action)), string(content))
+		cmd := Xor(string(action))
+		callback(conn, string(id), cmd, string(content))
+		if cmd != "ping" {
+			log.Println("read:", conn.RemoteAddr().String(), string(id), cmd, string(content))
+		}
 		//println("read11!!", l1,l2, l3,string(id), Xor(string(action)), string(content))
 		return headerLen*3 + int(l1+l2+l3), []byte{}, nil
 	}
