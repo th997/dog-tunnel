@@ -43,7 +43,10 @@ func handleClient(conn net.Conn) {
 	common.Read(conn, handleResponse)
 	client, bHave := common.Conn2ClientInfo[conn]
 	if bHave {
-		close(client.Quit)
+		_,ok:= <-client.Quit
+		if ok{
+			close(client.Quit)
+		}
 		if client.IsServer {
 			for conn, session := range client.ClientMap {
 				conn.Close()
