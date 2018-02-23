@@ -567,7 +567,7 @@ func main() {
 		go connect()
 		q := make(chan bool)
 		go func() {
-			c := time.NewTicker(time.Second * 10)
+			c := time.NewTicker(time.Second * 60)
 		out:
 			for {
 				select {
@@ -1108,7 +1108,7 @@ func (sc *Client) MultiListen() bool {
 		}
 		go func() {
 			quit := false
-			ping := time.NewTicker(time.Second)
+			ping := time.NewTicker(time.Second*30)
 			go func() {
 			out:
 				for {

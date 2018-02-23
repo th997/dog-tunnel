@@ -11,6 +11,7 @@ import (
 	"log"
 	"net"
 	"strconv"
+	"strings"
 )
 
 const Version = 0.80
@@ -58,6 +59,14 @@ func Write(conn net.Conn, id string, action string, content string) error {
 	l2 := len(action)
 	l3 := len(content)
 	var buf bytes.Buffer
+	cmd := Xor(string(action))
+	if !strings.Contains(cmd,"ping") {
+		content1 := content
+		if strings.Contains(cmd,"tunnel_msg"){
+			content1 = "***"
+		}
+		log.Println("wirte:",  id, cmd, conn.RemoteAddr().String(), content1)
+	}
 	binary.Write(&buf, binary.LittleEndian, uint32(l1))
 	binary.Write(&buf, binary.LittleEndian, uint32(l2))
 	binary.Write(&buf, binary.LittleEndian, uint32(l3))
@@ -110,8 +119,12 @@ func Read(conn net.Conn, callback ReadCallBack) {
 		binary.Read(buf, binary.LittleEndian, &content)
 		cmd := Xor(string(action))
 		callback(conn, string(id), cmd, string(content))
-		if cmd != "ping" {
-			log.Println("read:", conn.RemoteAddr().String(), string(id), cmd, string(content))
+		if !strings.Contains(cmd,"ping") {
+			content1 := string(content)
+			if strings.Contains(cmd,"tunnel_msg"){
+				content1 = "***"
+			}
+			log.Println("read:", string(id), cmd, conn.RemoteAddr().String(), content1)
 		}
 		//println("read11!!", l1,l2, l3,string(id), Xor(string(action)), string(content))
 		return headerLen*3 + int(l1+l2+l3), []byte{}, nil
