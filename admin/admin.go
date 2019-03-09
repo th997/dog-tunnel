@@ -106,16 +106,17 @@ func _adminKickServer(w http.ResponseWriter, r *http.Request) (result string, bS
 }
 
 func _adminGetServers(w http.ResponseWriter, r *http.Request) (result string, bSuccess bool) {
-	arr := make(map[string]([]string))
+	arr := make(map[string]string)
 	for _, server := range common.Conn2ClientInfo {
 		if server.IsServer {
-			_arr, bHave := arr[server.UserName]
-			if bHave {
+		//arr, bHave := arr[server.UserName]
+		/*	if bHave {
 				arr[server.UserName] = append(_arr, server.ServerName)
 				arr[server.UserName] = append(arr[server.UserName], server.Conn.RemoteAddr().String())
 			} else {
 				arr[server.UserName] = []string{server.ServerName, server.Conn.RemoteAddr().String()}
-			}
+			}*/
+			arr[server.ServerName]=server.Conn.RemoteAddr().String()
 		}
 	}
 	_result, _ := json.Marshal(arr)
